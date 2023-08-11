@@ -1,0 +1,62 @@
+version: '3'
+services:
+  backend-merge:
+    image: pdf-merger
+    container_name: backend-merge
+    build:
+      context: backend/merger
+      target: prod
+
+    ports:
+      - "8080"
+    networks:
+      - pdf-editor
+
+  backend-rotate:
+    image: pdf-rotator
+    container_name: backend-rotate
+    build:
+      context: backend/rotator
+      target: prod
+
+    ports:
+      - "8081"
+    networks:
+      - pdf-editor
+
+  frontend:
+    depends_on:
+      - backend-merge
+      - backend-rotate
+    image: pdf-frontend
+    container_name: frontend-pdf
+    build:
+      context: frontend
+      target: prod
+
+    ports:
+      - "80:80"
+    networks:
+      - pdf-editor
+
+  trace:
+    depends_on:
+      - frontend
+    image: jaegertracing/all-in-one
+    container_name: jaeger-tracing
+    ports:
+    - "6831"
+    - "6832"
+    - "5778"
+    - "16686:16686"
+    - "4317"
+    - "4318"
+    - "14250"
+    - "14268"
+    - "14269"
+    - "9411"
+    networks:
+      - pdf-editor
+
+networks:
+  pdf-editor:
