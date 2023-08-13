@@ -1,0 +1,46 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: backend-merge-service-monitor
+  labels:
+    release: prom
+    service-monitoring: backend-merge
+  namespace: spin-merge-ns
+spec:
+  selector:
+    matchLabels:
+      service: backend-merge
+  endpoints:
+    - port: web
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: backend-rotate-service-monitor
+  labels:
+    release: prom
+    service-monitoring: backend-rotate
+  namespace: spin-merge-ns
+spec:
+  selector:
+    matchLabels:
+      service: backend-rotate
+  endpoints:
+    - port: web
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: frontend-service-monitor
+  labels:
+    release: prom
+    service-monitoring: frontend
+  namespace: spin-merge-ns
+spec:
+  selector:
+    matchLabels:
+      name: spin-merge-frontend
+  endpoints:
+    - port: web

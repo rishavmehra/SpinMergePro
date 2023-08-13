@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spin-merge-frontend
+  labels:
+    app: frontend-spin-merge
+  namespace: spin-merge-ns
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend-spin-merge
+  template:
+    metadata:
+      labels:
+        app: frontend-spin-merge
+    spec:
+      containers:
+        - name: spin-merge-frontend
+          image: rishavmehra/spin-merge:frontend
+          resources:
+            requests:
+              memory: "50Mi"
+              cpu: "10m"
+            limits:
+              memory: "500Mi"
+              cpu: "100m"
+          livenessProbe:
+            httpGet:
+              port: 80
+              path: /
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              port: 80
+              path: /
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: web-port
