@@ -174,7 +174,7 @@ resource "aws_instance" "web-server-ec2" {
 
     git clone https://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@github.com/rishavmehra/SpinMergePro.git
 
-    cd PDF-Editor/deploy/IAC/ansible-terraform
+    cd SpinMergeProIAC/ansible-terraform
     sudo docker-compose up -d
 
     EOF
