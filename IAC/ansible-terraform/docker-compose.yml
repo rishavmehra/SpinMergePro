@@ -1,0 +1,58 @@
+version: '2.2'
+
+volumes:
+  app_data_M:
+  app_data_R:
+
+networks:
+  spin-merge:
+services:
+  backend-merge:
+    image: rishavmehra/spin-merge:backend-merger
+    container_name: backend-merge
+    ports:
+      - "8080"
+    networks:
+      - spin-merge
+    volumes:
+      - app_data_M:/go/src
+
+  backend-rotate:
+    image: rishavmehra/spin-merge:backend-rotate
+    container_name: backend-rotate
+    ports:
+      - "8081"
+    volumes:
+      - app_data_R:/go/src
+    networks:
+      - spin-merge
+
+  frontend:
+    depends_on:
+      - backend-merge
+      - backend-rotate
+    image: rishavmehra/spin-merge:frontend
+    container_name: frontend
+    ports:
+      - "80:80"
+    networks:
+      - spin-merge
+
+  trace:
+    depends_on:
+      - frontend
+    image: jaegertracing/all-in-one
+    container_name: jaeger-tracing-spin-merge
+    ports:
+    - "6831"
+    - "6832"
+    - "5778"
+    - "16686:16686"
+    - "4317"
+    - "4318"
+    - "14250"
+    - "14268"
+    - "14269"
+    - "9411"
+    networks:
+      - spin-merge

@@ -1,0 +1,12 @@
+---
+- name: PDF Editor playbook
+  hosts: all
+  become: true
+  tasks:
+    - name: Ping my hosts
+      ansible.builtin.ping:
+    - name: Print message
+      ansible.builtin.debug:
+        msg: Hello from preview runner!!!
+    - name: Git pull latest updates
+      shell: "cd /home/ubuntu/SpinMergePro/ && git pull origin master && sudo apt -y update"
