@@ -1,0 +1,159 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spin-merge-backend-merger
+  namespace: { { .Values.namespace } }
+  labels:
+    app: backend-merge
+spec:
+  replicas: { { .Values.replicaCount.backend } }
+  selector:
+    matchLabels:
+      app: backend-merge
+  template:
+    metadata:
+      labels:
+        app: backend-merge
+
+    spec:
+      volumes:
+        - name: backend
+          emptyDir: {}
+      initContainers:
+        - name: spin-merge-files
+          image: rishavmehra/spin-merge:backend-merger
+          volumeMounts:
+            - name: backend
+              mountPath: /mnt
+          command: ["cp", "-vR", ".", "/mnt"]
+
+      containers:
+        - name: spin-merge
+          image: rishavmehra/spin-merge:backend-merger
+          volumeMounts:
+            - name: backend
+              mountPath: /go/src/
+          resources:
+            requests:
+              memory: "50Mi"
+              cpu: "10m"
+            limits:
+              memory: "500Mi"
+              cpu: "100m"
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /greet
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /greet
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          ports:
+            - containerPort: 8080
+          imagePullPolicy: { { .Values.image.pullPolicy } }
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spin-merge-backend-rotator
+  namespace: { { .Values.namespace } }
+  labels:
+    app: backend-rotate
+spec:
+  replicas: { { .Values.replicaCount.backend } }
+  selector:
+    matchLabels:
+      app: backend-rotate
+  template:
+    metadata:
+      labels:
+        app: backend-rotate
+
+    spec:
+      volumes:
+        - name: backend
+          emptyDir: {}
+      initContainers:
+        - name: spin-merge-files
+          image: rishavmehra/spin-merge:backend-rotate
+          volumeMounts:
+            - name: backend
+              mountPath: /mnt
+          command: ["cp", "-vR", ".", "/mnt"]
+
+      containers:
+        - name: spin-merge
+          image: rishavmehra/spin-merge:backend-rotate
+          volumeMounts:
+            - name: backend
+              mountPath: /go/src/
+          resources:
+            requests:
+              memory: "50Mi"
+              cpu: "10m"
+            limits:
+              memory: "500Mi"
+              cpu: "100m"
+          livenessProbe:
+            httpGet:
+              port: 8081
+              path: /greet
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              port: 8081
+              path: /greet
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          ports:
+            - containerPort: 8081
+          imagePullPolicy: { { .Values.image.pullPolicy } }
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spin-merge-frontend
+  namespace: { { .Values.namespace } }
+  labels:
+    app: frontend-spin-merge
+spec:
+  replicas: { { .Values.replicaCount.frontend } }
+  selector:
+    matchLabels:
+      app: frontend-spin-merge
+  template:
+    metadata:
+      labels:
+        app: frontend-spin-merge
+    spec:
+      containers:
+        - name: spin-merge
+          image: rishavmehra/spin-merge:frontend
+          resources:
+            requests:
+              memory: "50Mi"
+              cpu: "10m"
+            limits:
+              memory: "500Mi"
+              cpu: "100m"
+          livenessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          ports:
+            - containerPort: 80
+              name: web-port
+          imagePullPolicy: { { .Values.image.pullPolicy } }

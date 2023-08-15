@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-merge
+  namespace: { { .Values.namespace } }
+  labels:
+    service: backend-merge
+spec:
+  type: { { .Values.service.type } }
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: web
+  selector:
+    app: backend-merge
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-rotate
+  namespace: { { .Values.namespace } }
+  labels:
+    service: backend-rotate
+spec:
+  type: { { .Values.service.type } }
+  ports:
+    - port: 8081
+      targetPort: 8081
+      name: web
+  selector:
+    app: backend-rotate
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-lb
+  namespace: { { .Values.namespace } }
+  labels:
+    name: spin-merge-frontend
+spec:
+  selector:
+    app: frontend-spin-merge
+  type: ClusterIP
+  ports:
+    - port: 80
+      name: web
+      targetPort: web-port
+      protocol: TCP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spin-merge-ig
+  labels:
+    name: spin-merge-ig
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  namespace: { { .Values.namespace } }
+spec:
+  rules:
+    - host: spin-merge
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: frontend-lb
+                port:
+                  number: 80
