@@ -3,11 +3,11 @@
 # Author: Rishav Mehra
 
 sysUpdate() {
-  ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu --private-key ./rishav.pem -i '52.86.164.119,' ec2-cfg.yml
+  ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu --private-key ./rishav.pem -i '52.4.172.250,' ec2-cfg.yml
 }
 
 againDeployNewVersion() {
-  ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu --private-key ./rishav.pem -i '52.86.164.119,' ec2-cfg-update.yml
+  ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu --private-key ./rishav.pem -i '52.4.172.250,' ec2-cfg-update.yml
 }
 
 

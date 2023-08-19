@@ -11,16 +11,6 @@ terraform {
 
 }
 
-variable "access_key" {
-  description = "Enter your AWS Access Key: "
-  type        = string
-}
-
-variable "secret_key" {
-  description = "Enter your AWS Secret Key: "
-  type        = string
-}
-
 provider "aws" {
   region     = "us-east-1"
   access_key = var.access_key

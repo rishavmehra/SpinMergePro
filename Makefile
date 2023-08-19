@@ -1,4 +1,6 @@
 
+
+#https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack
 Kubernetes:
 	kubectl cluster-info
 	kubectl create ns monitoring
